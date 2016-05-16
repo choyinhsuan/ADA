@@ -1,78 +1,81 @@
 #include <iostream>
 #include <stdbool.h>
+#include <algorithm>
 #include <stdlib.h>
+#include <cstdlib>
 using namespace std;
 
-long long n, k;
-long long a[1500];
-long long record[1500][1500] = {0};
-long long dp[1500][550] = {0};
-long long discomfort(long long r, long long l);
-//long findcut(long r, long l);
+long long N;
+typedef struct Record{
+    long long cook;
+    long long sum;
+    long long num;
+    long long diff;
+}record;
 
+bool cmp(pair<long long, long long> a, pair<long long, long long> b);
+bool cmp2(pair<long long, long long> a, pair<long long, long long> b);
+bool cmp3(record a, record b);
 
 int main(){
     ios_base::sync_with_stdio(false);
     cin.tie(nullptr);
 
-    cin>>n>>k;
-    for (long long i = 0; i<n; i++){
-        cin>>a[i];
-    }
-    for (long long i = 0; i<n; i++){
-        for (long long j = 0; j<=i; j++){
-            //cout<<i<<" "<<j<<" ";
-            record[i][j] = discomfort(i, j);
-            //cout<<record[i][j]<<" ";
-            record[i][j] *= (i-j+1);
-            //cout<<record[i][j]<<"\n";
+    cin>>N;
+    pair<long long, long long> time[500000];
+    record group[500000];
+    long long m;
+
+    for (long long i = 0; i<N; i++){
+        cin>>m;
+        long long cook = 0;
+        long long eat = 0;
+        for(long long j = 0; j<m; j++){
+            cin>>time[j].first>>time[j].second;
+            cook += time[j].first;
+            eat += time[j].second;
         }
-    }
-    
-    /*long long mini = 1000000;
-    for (long long i = 0; i<n-1; i++){
-        long long sum = record[n-1][i+1]+ record[i][0];
-        if (sum < mini)
-            mini = sum;
-    }
-    cout<<mini;*/
-    for (long long i = n-1; i>=0; i--){
-        for (long long j = 0; j<k; j++){
-            dp[i][j] = 10000000000000;
-            for (long long l = i; l<n; l++){
-                if (j > 0){
-                    dp[i][j] = min(dp[i][j], record[l][i]+dp[l+1][j-1]);
-                }
-                else
-                    dp[i][j] = record[n-1][i];
-                //cout<<i<<" "<<j<<"  "<<l<<" "<<dp[i][j]<<"\n";
-            }
+        group[i].cook = cook;
+        stable_sort(time, time+m, cmp);
+        //cout<<time[0].first<<" "<<time[1].first<<"\n";
+        stable_sort(time, time+m, cmp2);
+        long long sum = 0;
+        long long max = 0;
+        for (long long j = m-1; j>=0; j--){
+            long long temp = cook-sum+time[j].second;
+            sum += time[j].first;
+            if (temp > max)
+                max = temp;
         }
+        group[i].sum = max;
+        group[i].num = m;
+        group[i].diff = (max-cook);
+        //cout<<group[i].cook<<" "<<group[i].sum<<"\n";
     }
-    cout<<dp[0][k-1]<<"\n";
+    //cout<<group[0].sum;
+
+    stable_sort(group, group+N, cmp3);
+    long long sum = 0;
+    long long ans = 0;
+    for (long long i = 0; i<N; i++){
+        ans += (sum+group[i].sum)*group[i].num;
+        sum += group[i].cook;
+        //cout<<sum<<" "<<ans<<"\n";
+        
+    }
+    cout<<ans;
     return 0;
-
 }
 
-long long discomfort(long long r, long long l){
-    long long current = a[l];
-    long long max = a[l];
-    for (long long i = l+1; i<=r; i++){
-        current += a[i];
-        if (current < a[i]){
-            current = a[i];
-        }
-        if (current > max){
-            max = current;
-        }
-        //printf("%d\n", current);
-        //printf("%d ", max);
-    }
-    return max;
+bool cmp(pair<long long, long long> a, pair<long long, long long> b){
+    return a.first < b.first;
 }
-/*long findcut(long r, long l){
-    long num = k-1;
-    for (long i = 0; i<n; i++){
-        for (long j = num; j>record[])
-    }
-}*/
+bool cmp2(pair<long long, long long> a, pair<long long, long long> b){
+    return a.second > b.second;
+}
+bool cmp3(record a, record b){
+    long long tempa = a.num*b.cook;
+    long long tempb = b.num*a.cook;
+    return tempa>tempb;
+}
+
