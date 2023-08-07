@@ -4,7 +4,7 @@ using namespace std;
 
 long simplebuy(long index, long remain, long *price, long ans);
 long smartbuy(long index, long remain, long *price);
-//void quicksort(int *price, int left, int right);
+
 long dp[5000][5000];
 long N, W;
 
@@ -24,9 +24,7 @@ int main(){
     }
 
     sort(price,price+N);
-    /*for (int i = 0; i<N; i++){
-        cout<<price[i]<<" ";
-    }*/
+    
     for (long i = 1; i <= W; i++){
         long ans = smartbuy(0, i, price)-simplebuy(N-1, i, price, 0);
         //cout<<smartbuy(0, i, price)<<" "<<simplebuy(0, i, price, 0)<<"\n";
