@@ -36,9 +36,9 @@ void printMST(){
 	long long sum = 0;
 	for (long long i = 0; i < V; i++){
 		sum += key[i].c;
-		//cout<<i<<" "<<key[i].c<<" "<<parent[i]<<"|";
+		
 	}
-		//cout << parent[i] << " - " << i << " \t"<< graph[i][parent[i]].c << " \n";
+		
 	cout<<sum<<"\n";
 	return;
 }
